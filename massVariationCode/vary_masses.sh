@@ -2,6 +2,10 @@
 
 #! Originally written by Earl Bellinger. Modified by Kenny Roffo.
 
+if [ -d "mass" ]; then
+    rm -rf mass
+fi
+
 cp -R $MESA_DIR/star/work .
 (cd work; ./mk)
 mkdir mass

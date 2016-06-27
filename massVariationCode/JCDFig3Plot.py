@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -13,7 +15,7 @@ step = 0.1
 
 for i in np.arange(lowest_mass, highest_mass + step, step):
     # May need to change {:0X.Xf} to account for directory names
-    t, l = np.loadtxt(fname="mass/{:03.1f}/LOGS/Analysis/critPoints.dat".format(i), unpack=True, usecols=(0,1), skiprows=1)
+    t, l, r = np.loadtxt(fname="mass/{:03.1f}/LOGS/Analysis/critPoints.dat".format(i), unpack=True, skiprows=1)
     luminosityRatio.append( (10**l[0]) / (10**l[1]) )
     mass.append(i)
 

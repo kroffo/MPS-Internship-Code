@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -29,8 +31,9 @@ def main():
     min_index = crits[0][0]
     max_index = crits[0][1]
     midpoints = min_index - max_index
-    tmin, tmax, lmin, lmax, rmin, rmax = t[min_index], t[max_index], l[min_index
-    ], l[max_index], r[min_index], r[max_index]
+    tmin, tmax, lmin, lmax, rmin, rmax, amax, amin = t[min_index], t[
+        max_index], l[min_index], l[max_index], r[min_index], r[
+        max_index], a[max_index], a[min_index]
     
     create_hrbump_plot(t, l, crits[1], crits[2], mass)
 
@@ -58,14 +61,15 @@ def main():
     r = list(reversed(r))
 
     f = open('trimmedMALTR.dat', 'w')
+    f.write("Mass\tAge\tLuminosity\tTemperature\tRadius\n")
     for i in range(len(t)):
         f.write("%f\t%f\t%f\t%f\t%f\n"%(mass,a[i],l[i],t[i],r[i]))
     f.close()
 
     f = open('critPoints.dat', 'w')
-    f.write("Temperature\tLuminosity\n")
-    f.write("%f\t%f\t%f\n"%(tmax,lmax,rmax))
-    f.write("%f\t%f\t%f\n"%(tmin,lmin,rmin))
+    f.write("Temperature\tLuminosity\tRadius\tAge\n")
+    f.write("%f\t%f\t%f\t%f\n"%(tmax,lmax,rmax,amax))
+    f.write("%f\t%f\t%f\t%f\n"%(tmin,lmin,rmin,amin))
     f.close()
 
     plt.plot(t,l,"b.")
@@ -77,8 +81,8 @@ def main():
 
     plt.savefig("bump.png")
 
-# finds the min and max of the bump by finding the first local max above the
-# minimum luminosity, and the first min to follow
+# finds the min and max of the bump by finding the first local max and min
+# within temp_tolerance log(K) of each other
 def find_min_max(t,l, start_index):
     max_l, min_l, max_t, max_l = 0, 0, 0, 0
     max_index, min_index = 0, 0
