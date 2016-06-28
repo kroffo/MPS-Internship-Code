@@ -37,28 +37,22 @@ def main():
     
     create_hrbump_plot(t, l, crits[1], crits[2], mass)
 
-    # Cut out data sufficiently far from the bump
-    for i in range(min_index + midpoints,len(a)):
-        del a[-1]
-        del l[-1]
-        del t[-1]
-        del r[-1]
+    for i in range(min_index, len(a)):
+        # Go about for the uncertainty (2sigma)
+        if t[i] < t[max_index] - 100/(10**t[max_index]):
+            a = a[:i]
+            l = l[:i]
+            t = t[:i]
+            r = r[:i]
+            break
 
-    a = list(reversed(a))
-    l = list(reversed(l))
-    t = list(reversed(t))
-    r = list(reversed(r))
-
-    for i in range(max_index - midpoints):
-        del a[-1]
-        del l[-1]
-        del t[-1]
-        del r[-1]
-        
-    a = list(reversed(a))
-    l = list(reversed(l))
-    t = list(reversed(t))
-    r = list(reversed(r))
+    for i in range(max_index, 0, -1):
+        if t[i] > t[min_index] + 100/(10**t[min_index]):
+            a = a[i:]
+            l = l[i:]
+            t = t[i:]
+            r = r[i:]
+            break
 
     f = open('trimmedMALTR.dat', 'w')
     f.write("Mass\tAge\tLuminosity\tTemperature\tRadius\n")
@@ -73,7 +67,7 @@ def main():
     f.close()
 
     plt.plot(t,l,"b.")
-    plt.plot(crits[1],crits[2],"ro")
+    #plt.plot(crits[1],crits[2],"ro")
     plt.subplot().minorticks_on()
     #plt.title("Bump of {:04.2f} M$_☉$ Star".format(mass))
     plt.xlabel(r"Effective Temperature log(T$_{\mathrm{eff}}$/K)")
