@@ -1,0 +1,62 @@
+This is the directory where analysis starts. You should have MESA and ADIPLS
+installed. The first script to run is
+
+           ./vary_masses.sh
+
+This script will remove the mass directory if it currently exists, so do not
+run this script if you already have data there which you wish to save. It then
+recreates the directory and starts several MESA tracks with solar calibrated
+input other than mass. Mass values range from 0.7 to 2.2, though this can be
+changed by editing the script.
+
+Eventually, when the MESA jobs are finished, you will need to locate the bump
+and restart MESA on just the bump so that many more models are output. To locate
+the bump, run
+
+           ./analyzeStars.sh
+
+This will locate the bump in each track and make plots indicating where it was
+found to be stored for your convenience in the newly made plots directory.
+
+Next, you should start MESA to run on the bumps of the tracks by running
+
+           ./analyzeBump.sh        or        ./analyzeBumpZoomed.sh
+
+Both of these scripts will create a bumpTrack directory inside mass/<MASS> for
+each <MASS> track. The difference between them is that analyzeBumpZoomed.sh will
+give a much smaller area around the bump. This is what I used for my analyses.
+To have MESA started on each track when these directories are created, you can
+pass 'true' as the first parameter to the script.
+
+Running analyzeStars.sh and analyzeBumpZoomed.sh can be done in one step by
+running
+
+        ./analyze.sh
+
+(Note that this will start MESA on each of the bump tracks as well)
+
+Once these tracks are finished, you should copy the bumpAnalysis directory into
+
+     mass/<MASS>/bumpTrack/LOGS/Analysis
+
+(renaming bumpAnalysis as Analysis. This is important for scripts which refer to
+this directory such as applyToAll.sh.
+
+Having all these tracks, you may want to do the same thing to all of them, which can be quite time consuming. In order to speed up that process, you can use
+
+       ./applyToAll.sh "<INSERT BASH COMMAND HERE>"
+
+and the command inside the quotes will be executed from
+
+    mass/<MASS>/bumpTrack/LOGS/Analysis
+
+Once the Analysis directories are created, you should see that directory's
+info.txt file and follow. Once you have run the basic scripts to calculate data,
+you will be able to successfully run
+
+         python SuperMultiPlot.py
+
+which has the capability to plot things against things for all tracks
+simultaneously (see the script for more info). This is an adapted version of
+the more powerful SuperPlot.py which can be found in the Analysis directories.
+found

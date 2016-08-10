@@ -1,0 +1,66 @@
+This directory should be copied into the LOGS directory of a MESA track and
+renamed Analysis. The MESA track should have FGONG files for profiles which
+ADIPLS will be used to analyze.
+
+The first thing to do is run
+
+        ./setup.sh
+
+This will setup directories Data, where calculated values will be stored, and
+Plots, where plots will be stored.
+
+       If not done so already, ADIPLS can be run using ./analyzeFgongsAdipls.sh.
+One thing to be mindful of is the amount of memory ADIPLS uses. While it runs,
+ADIPLS creates .amde files, which can take several Gb of data. My script will
+delete these files as ADIPLS copmletes analyzing a profile, but I have found
+that sometimes it does not delete them fast enough, and I get yelled at by the
+people in charge of the servers. To work around this, I used xargs to submit one
+job to the cluster which analyzes all the profiles with ADIPLS, but it maxes out
+running 50 at a time.
+       Once ADIPLS has finished, 
+
+       ./getVfactors.sh        (Calculates numax and Dnu from scaling relations)
+       ./getSeparations.sh     (Calculates Dnu, dnu, dnu01 for each profile)
+
+should be run. Next, run
+
+        ./getFilteredMALTRdata.sh
+
+which will create Data/filteredMALTR.dat. A file which contains the same data as
+MALTR.dat, but does not include the profiles which ADIPLS did not output
+frequencies for. This file should be used in place of MALTR.dat when plotting
+against things which require frequencies (such as frequency separations).
+        Then...
+
+       python calculateModelSeparations.py      (Averages dnu and Dnu)
+       python calculateDPi.py                   (Period Separation)
+       python calculateVclosestVmax.py          (nu closest numax)
+       python calculateMaxBvf.py                (Highest brunt-vasala frequency)
+       python findDiscontinuities.py            (Radius of discontinuity)
+
+will average Dnu, dnu values, and calculate DPi and v closest to v_max for each
+profile, and write them to files in Data.
+
+IMPORTANT: The above .sh scripts will not work properly if submitted as jobs to
+the cluster as they submit jobs to the cluster, and cannot if being run on the
+cluster.
+
+Several of the python scripts have corresponding bash scripts which will use the
+python scrpts on each of the profiles.
+
+Once all values are calculated, SuperPlot.py can be used to plot things. If
+you have not calculated some of the required values, simply comment out the
+lines which read those files in and rerun.
+
+
+NOTE: If you wish to edit the input to ADIPLS, the file used to run ADIPLS is
+
+      ./.adipls-freq-files/fgong2freqs-giants.sh
+
+
+      For some reason, ADIPLS does not run properly on several profiles
+sometimes. For my 1 solar mass track frequencies are not output for 23 profiles.
+I do not know why, but this has happened multiple times for the same profiles.
+Since the profiles are sporadic, it will not damage the quality of my analyses,
+thus I will not be tackling this issue due to the short amount of time I have
+remaining.
